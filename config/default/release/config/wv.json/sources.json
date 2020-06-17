@@ -20,6 +20,8 @@
         },
         "WDPA:wms": {
             "url": "https://gis.unep-wcmc.org/arcgis/services/wdpa/public/MapServer/WMSServer"
-        }
+        },
+        "LOCAL:wms": {"url": "http://localhost:8080/service"}
+
     }
 }

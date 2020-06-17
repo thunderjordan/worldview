@@ -69,6 +69,7 @@ window.onload = () => {
   loadingIndicator.delayed(promise, 1000);
   promise.done((config) => {
     // Perform check to see if app was in the midst of a tour
+    console.log(config);
     const hasTour = lodashGet(config, `stories[${parameters.tr}]`);
     if (hasTour) {
       // Gets the extent of the first tour step and overrides view params

@@ -1112,6 +1112,7 @@ export default function mapui(models, config, store, ui) {
     let hoverThrottle;
 
     function onMouseMove(e) {
+      return;
       const state = store.getState();
       if (self.mapIsbeingZoomed) return;
       if (compareMapUi && compareMapUi.dragging) return;

@@ -1,5 +1,8 @@
 /* eslint-disable import/no-duplicates */
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
+import { createXYZ } from 'ol/tilegrid';
+import XYZ from 'ol/source/XYZ';
+
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlLayerGroup from 'ol/layer/Group';
@@ -295,8 +298,14 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     const activeDateStr = state.compare.isCompareA ? 'selected' : 'selectedB';
     const proj = state.proj.selected;
     const source = config.sources[def.source];
-    if (!source) {
-      throw new Error(`${def.id}: Invalid source: ${def.source}`);
+    if (def.id === 'basic') {
+      const xyzsource = new XYZ({
+        url: 'http://localhost:8080/tile/{z}/{x}/{y}.png',
+      });
+      return new OlLayerTile({
+        preload: Infinity,
+        source: xyzsource,
+      });
     }
     const matrixSet = source.matrixSets[def.matrixSet];
     if (!matrixSet) {
@@ -321,7 +330,11 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       matrixIds: def.matrixIds || resolutions.map((set, index) => index),
       tileSize: tileSize[0],
     };
+    console.log(matrixSet);
+    console.log(tileMatrices);
     const urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
+    // if (!source.url) source.url = 'http://localhost:8080/styles';
+
     const sourceOptions = {
       url: source.url + urlParameters,
       layer: def.layer || def.id,
@@ -338,10 +351,13 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       const lookup = getPaletteLookup(def.id, options.group, state);
       sourceOptions.tileClass = lookupFactory(lookup, sourceOptions);
     }
+    const xyzsource = new XYZ({
+      url: 'http://localhost:8080/tile/{z}/{x}/{y}.png',
+    });
     return new OlLayerTile({
       preload: Infinity,
       extent,
-      source: new OlSourceWMTS(sourceOptions),
+      source: source.url ? new OlSourceWMTS(sourceOptions) : xyzsource,
     });
   };
 
@@ -504,8 +520,9 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     const parameters = {
       LAYERS: def.layer || def.id,
       FORMAT: def.format,
-      TRANSPARENT: transparent,
+      // TRANSPARENT: transparent,
       VERSION: '1.1.1',
+      EXCEPTIONS: 'application/vnd.ogc.se_inimage',
     };
     if (def.styles) {
       parameters.STYLES = def.styles;
@@ -513,11 +530,11 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
 
     urlParameters = '';
 
-    date = options.date || state.date[activeDateStr];
-    if (day && def.wrapadjacentdays) {
-      date = util.dateAdd(date, 'day', day);
-    }
-    urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
+    // date = options.date || state.date[activeDateStr];
+    // if (day && def.wrapadjacentdays) {
+    //   date = util.dateAdd(date, 'day', day);
+    // }
+    // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
 
     const sourceOptions = {
       url: source.url + urlParameters,

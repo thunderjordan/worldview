@@ -300,6 +300,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     const source = config.sources[def.source];
     if (def.id === 'basic') {
       const xyzsource = new XYZ({
+        projection: 'EPSG:4326',
         url: 'http://localhost:8080/tile/{z}/{x}/{y}.png',
       });
       return new OlLayerTile({

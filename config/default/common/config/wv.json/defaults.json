@@ -8,7 +8,7 @@
             { "id": "VIIRS_NOAA20_CorrectedReflectance_TrueColor", "hidden": "true" },
             { "id": "Coastlines" },
             { "id": "Reference_Features", "hidden": "true" },
-            { "id": "osm", "hidden": "true" },
+            { "id": "__all__", "hidden": "true" },
             { "id": "Reference_Labels", "hidden": "true" }
         ]
     }

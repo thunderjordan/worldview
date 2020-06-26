@@ -856,7 +856,7 @@
         "ASTER_GDEM_Color_Shaded_Relief",
         "ASTER_GDEM_Greyscale_Shaded_Relief",
         "SRTM_Color_Index",
-        "osm",
+        "__all__",
         "GRanD_Reservoirs",
         "GRanD_Dams",
         "Nuclear_Power_Plant_Locations",

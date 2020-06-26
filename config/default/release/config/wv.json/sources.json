@@ -21,7 +21,9 @@
         "WDPA:wms": {
             "url": "https://gis.unep-wcmc.org/arcgis/services/wdpa/public/MapServer/WMSServer"
         },
-        "LOCAL:wms": {"url": "http://localhost:8080/service"}
+        "LOCAL:wms": {"url": "http://localhost:8000/"},
+        "LOCAL:wms:arctic": {"url": "http://localhost:8000/"},
+        "LOCAL:wms:antarctic": {"url": "http://localhost:8000/"}
 
     }
 }

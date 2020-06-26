@@ -1,13 +1,13 @@
 {
   "layers": {
-    "osm": {
-      "id": "osm",
+    "__all__": {
+      "id": "__all__",
       "group": "overlays",
       "type": "wms",
       "layergroup": [
         "osm"
       ],
-      "format": "image/jpeg", "period": "daily", "projections": {"arctic": {"source": "LOCAL:wms:arctic"}, "geographic": {"source": "LOCAL:wms"}},
+      "format": "image/jpeg", "period": "daily", "projections": {"antarctic": {"source": "LOCAL:wms:antarctic"},"arctic": {"source": "LOCAL:wms:arctic"}, "geographic": {"source": "LOCAL:wms"}},
       "wrapadjacentdays": true
     }
   }

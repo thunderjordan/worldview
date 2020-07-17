@@ -301,7 +301,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     if (def.id === 'basic') {
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
-        url: 'http://localhost:8080/tile/{z}/{x}/{y}.png',
+        url: 'http://localhost:8080/geographic/map.{z}/{x}/{y}.png',
       });
       return new OlLayerTile({
         preload: Infinity,
@@ -537,6 +537,16 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     // }
     // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
 
+    if (def.id === '__all__') {
+      const xyzsource = new XYZ({
+        projection: 'EPSG:4326',
+        url: 'http://localhost:8080/{z}/{x}/{y}.png',
+      });
+      return new OlLayerTile({
+        preload: Infinity,
+        source: xyzsource,
+      });
+    }
     const sourceOptions = {
       url: source.url + urlParameters,
       cacheSize: 4096,

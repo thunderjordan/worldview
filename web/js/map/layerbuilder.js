@@ -536,11 +536,19 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     //   date = util.dateAdd(date, 'day', day);
     // }
     // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
-
+    const reso = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625];
     if (def.id === '__all__') {
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
         url: 'http://localhost:8080/{z}/{x}/{y}.png',
+        tileSize: 512,
+        tileGrid: new OlTileGridTileGrid({
+          origin: start,
+          resolutions: reso,
+          tileSize: [512, 512],
+        }),
+        // maxResolution: 180 / 512,
+        // tilePixelRatio: 1,
       });
       return new OlLayerTile({
         preload: Infinity,
@@ -556,8 +564,14 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       params: parameters,
       transition: 0,
       tileGrid: new OlTileGridTileGrid({
-        origin: start,
+        origin: [0, -180, -90],
         resolutions: res,
+        extent: [
+          -180,
+          -90,
+          180,
+          90,
+        ],
       }),
     };
     if (isPaletteActive(def.id, options.group, state)) {

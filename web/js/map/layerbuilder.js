@@ -540,16 +540,23 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     if (def.id === '__all__') {
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
-        url: 'http://localhost:8080/{z}/{x}/{y}.png',
+        url: 'http://localhost:8080/{z}/{y}/{x}.png',
         tileSize: 512,
+        extent: [-180, -90, 180, 90],
+        // tileUrlFunction: ([z, y, x]) => {
+        //   const newY = Math.pow(2, z) - y - 1;
+        //   return `http://localhost:8080/${z}/${x}/${newY}.png`;
+        // },
         tileGrid: new OlTileGridTileGrid({
           origin: start,
           resolutions: reso,
           tileSize: [512, 512],
+          extent: [-180, -90, 180, 90],
         }),
-        // maxResolution: 180 / 512,
-        // tilePixelRatio: 1,
+        maxResolution: 180 / 512,
+        tilePixelRatio: 1,
       });
+
       return new OlLayerTile({
         preload: Infinity,
         source: xyzsource,

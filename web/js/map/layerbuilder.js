@@ -122,7 +122,8 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       lodashMerge(def, def.projections[proj.id]);
       if (def.breakPointLayer) def = mergeBreakpointLayerAttributes(def, proj.id);
 
-      const wrapLayer = proj.id === 'geographic' && (def.wrapadjacentdays === true || def.wrapX);
+      // const wrapLayer = proj.id === 'geographic' && (def.wrapadjacentdays === true || def.wrapX);
+      const wrapLayer = false;
       switch (def.type) {
         case 'wmts':
           layer = getLayer(createLayerWMTS, def, options, attributes, wrapLayer);
@@ -538,28 +539,46 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
     const reso = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625];
     if (def.id === '__all__') {
+      const tileMatrices = [
+        { matrixWidth: 2, matrixHeight: 1 },
+        { matrixWidth: 3, matrixHeight: 2 },
+        { matrixWidth: 5, matrixHeight: 3 },
+        { matrixWidth: 10, matrixHeight: 5 },
+        { matrixWidth: 40, matrixHeight: 10 },
+        { matrixWidth: 48, matrixHeight: 32 },
+        { matrixWidth: 80, matrixHeight: 48 },
+        { matrixWidth: 160, matrixHeight: 80 },
+        { matrixWidth: 321, matrixHeight: 161 },
+      ];
+      const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
+
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
-        url: 'http://localhost:8080/{z}/{y}/{x}.png',
+        url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
         tileSize: 512,
         extent: [-180, -90, 180, 90],
-        // tileUrlFunction: ([z, y, x]) => {
-        //   const newY = Math.pow(2, z) - y - 1;
-        //   return `http://localhost:8080/${z}/${x}/${newY}.png`;
+        // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
+        //   const z = tileCoord[0];
+        //   const x = tileCoord[1];
+        //   const y = -tileCoord[2] - 1;
+        //   // const newY = Math.pow(2, z) - y - 1;
+        //   return `http://localhost:8080/${proj.id}/${z}/${y}/${x}.png`;
         // },
         tileGrid: new OlTileGridTileGrid({
-          origin: start,
           resolutions: reso,
           tileSize: [512, 512],
           extent: [-180, -90, 180, 90],
+          origin: [-180, 90],
+          sizes: sizesXYZ,
         }),
-        maxResolution: 180 / 512,
-        tilePixelRatio: 1,
+        // maxResolution: 0.5625,
+        // tilePixelRatio: 2,
       });
-
+      console.log(xyzsource);
       return new OlLayerTile({
         preload: Infinity,
         source: xyzsource,
+        extent: [-180, -90, 180, 90],
       });
     }
     const sourceOptions = {

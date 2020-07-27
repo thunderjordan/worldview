@@ -537,7 +537,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     //   date = util.dateAdd(date, 'day', day);
     // }
     // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
-    const reso = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625];
+    const reso = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625, 0.0010986328125];
     if (def.id === '__all__') {
       const tileMatrices = [
         { matrixWidth: 2, matrixHeight: 1 },
@@ -549,6 +549,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         { matrixWidth: 80, matrixHeight: 48 },
         { matrixWidth: 160, matrixHeight: 80 },
         { matrixWidth: 321, matrixHeight: 161 },
+        { matrixWidth: 640, matrixHeight: 320 },
       ];
       const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
 
@@ -556,6 +557,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         projection: 'EPSG:4326',
         url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
         tileSize: 512,
+        minZoom: 1,
         extent: [-180, -90, 180, 90],
         // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
         //   const z = tileCoord[0];

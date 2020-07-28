@@ -557,7 +557,6 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         projection: 'EPSG:4326',
         url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
         tileSize: 512,
-        minZoom: 1,
         extent: [-180, -90, 180, 90],
         // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
         //   const z = tileCoord[0];

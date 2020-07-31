@@ -336,7 +336,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     console.log(tileMatrices);
     const urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
     // if (!source.url) source.url = 'http://localhost:8080/styles';
-
+    const tileGrid = new OlTileGridWMTS(tileGridOptions);
     const sourceOptions = {
       url: source.url + urlParameters,
       layer: def.layer || def.id,
@@ -345,10 +345,11 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       format: def.format,
       transition: 0,
       matrixSet: matrixSet.id,
-      tileGrid: new OlTileGridWMTS(tileGridOptions),
+      tileGrid,
       wrapX: false,
       style: typeof def.style === 'undefined' ? 'default' : def.style,
     };
+    console.log(tileGrid.getTileCoordExtent([7, 0, 0]));
     if (isPaletteActive(def.id, options.group, state)) {
       const lookup = getPaletteLookup(def.id, options.group, state);
       sourceOptions.tileClass = lookupFactory(lookup, sourceOptions);
@@ -426,7 +427,14 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     const breakPointType = lodashGet(def, 'breakPointLayer.breakPointType');
     const isMaxBreakPoint = breakPointType === 'max';
     const isMinBreakPoint = breakPointType === 'min';
+    const tileGrid = new OlTileGridTileGrid({
+      extent: gridExtent,
+      resolutions: matrixSet.resolutions,
+      tileSize: matrixSet.tileSize,
+      origin: start,
+      sizes: matrixSet.tileMatrices,
 
+    });
     const sourceOptions = new SourceVectorTile({
       url: source.url + urlParameters,
       layer: layerName,
@@ -434,14 +442,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       format: new MVT(),
       matrixSet: tileMatrixSet,
       wrapX,
-      tileGrid: new OlTileGridTileGrid({
-        extent: gridExtent,
-        resolutions: matrixSet.resolutions,
-        tileSize: matrixSet.tileSize,
-        origin: start,
-        sizes: matrixSet.tileMatrices,
-
-      }),
+      tileGrid,
     });
     const layer = new LayerVectorTile({
       extent: layerExtent,
@@ -537,27 +538,44 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
     //   date = util.dateAdd(date, 'day', day);
     // }
     // urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
-    const reso = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625, 0.0010986328125];
+    const resolutions = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625, 0.0010986328125];
     if (def.id === '__all__') {
       const tileMatrices = [
         { matrixWidth: 2, matrixHeight: 1 },
         { matrixWidth: 3, matrixHeight: 2 },
         { matrixWidth: 5, matrixHeight: 3 },
         { matrixWidth: 10, matrixHeight: 5 },
-        { matrixWidth: 40, matrixHeight: 10 },
-        { matrixWidth: 48, matrixHeight: 32 },
-        { matrixWidth: 80, matrixHeight: 48 },
+        { matrixWidth: 20, matrixHeight: 10 },
+        { matrixWidth: 40, matrixHeight: 20 },
+        { matrixWidth: 80, matrixHeight: 40 },
         { matrixWidth: 160, matrixHeight: 80 },
-        { matrixWidth: 321, matrixHeight: 161 },
+        { matrixWidth: 320, matrixHeight: 160 },
         { matrixWidth: 640, matrixHeight: 320 },
       ];
+      // [[-180, 90]],[-180, 90],[-180, 90],[-180, 90],[-180, 90],[-180, 90],[-180, 90]
       const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
-
+      const origins = resolutions.map((res) => [-180 + res / 2, 90 - res / 2]);
+      // const defaultTileGrid = createXYZ({
+      //   extent: [-180, -90, 180, 90],
+      //   tileSize: [512, 512],
+      //   maxResolution: 0.5625,
+      // });
+      console.log(origins);
+      const tileGrid = new OlTileGridTileGrid({
+        resolutions,
+        tileSize: [512, 512],
+        extent: [-180.000000, -198.000000, 396.000000, 90.000000],
+        // origin: [-180, 90],
+        origins,
+        sizes: sizesXYZ,
+        minZoom: 1,
+      });
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
         url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
         tileSize: 512,
-        extent: [-180, -90, 180, 90],
+        extent: [-180.000000, -90, 180, 90.000000],
+        // tileGrid: defaultTileGrid,
         // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
         //   const z = tileCoord[0];
         //   const x = tileCoord[1];
@@ -565,21 +583,16 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         //   // const newY = Math.pow(2, z) - y - 1;
         //   return `http://localhost:8080/${proj.id}/${z}/${y}/${x}.png`;
         // },
-        tileGrid: new OlTileGridTileGrid({
-          resolutions: reso,
-          tileSize: [512, 512],
-          extent: [-180, -90, 180, 90],
-          origin: [-180, 90],
-          sizes: sizesXYZ,
-        }),
-        // maxResolution: 0.5625,
+        tileGrid,
+        transition: 0,
+        maxResolution: 0.5625,
         // tilePixelRatio: 2,
       });
-      console.log(xyzsource);
+      console.log(tileGrid.getTileCoordExtent([7, 0, 0]));
       return new OlLayerTile({
         preload: Infinity,
         source: xyzsource,
-        extent: [-180, -90, 180, 90],
+        extent: [-180.000000, -90, 180, 90.000000],
       });
     }
     const sourceOptions = {

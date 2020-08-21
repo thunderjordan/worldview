@@ -549,10 +549,10 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         { matrixWidth: 40, matrixHeight: 20 },
         { matrixWidth: 80, matrixHeight: 40 },
         { matrixWidth: 160, matrixHeight: 80 },
-        { matrixWidth: 321, matrixHeight: 161 },
+        { matrixWidth: 320, matrixHeight: 160 },
         // { matrixWidth: 640, matrixHeight: 320 },
       ];
-      const origins = [[-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-179.980606, 89.997803], [-180, 90], [-180, 90]];
+      const origins = [[-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-179.980606, 89.997803], [-180, 90]];// , [-180, 90]];
       const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
       // const origins = resolutions.map((res) => [-180 + res / 2, 90 - res / 2]);
       // const defaultTileGrid = createXYZ({
@@ -560,18 +560,20 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       //   tileSize: [512, 512],
       //   maxResolution: 0.5625,
       // });
+      // origin: [-180, 90], // 89.997803],
       const tileGrid = new OlTileGridTileGrid({
         resolutions,
         tileSize: [512, 512],
         extent: [-180.000000, -198.000000, 396.000000, 90.000000],
-        origin: [-180.011206, 90.00500], // 89.997803],
-        // origins,
+
+        origins,
         sizes: sizesXYZ,
         minZoom: 1,
       });
       const xyzsource = new XYZ({
         projection: 'EPSG:4326',
         url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
+        // url: `http://localhost:8080/${proj.id}/{z}/0/{x}/map.{z}.0.0_0{x}_050.png`,
         tileSize: 512,
         extent: [-180.000000, -90, 180, 90.000000],
         // tileGrid: defaultTileGrid,

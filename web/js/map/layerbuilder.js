@@ -2,9 +2,11 @@
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
+import TileDebug from 'ol/source/TileDebug';
 import OlLayerGroup from 'ol/layer/Group';
 import OlLayerTile from 'ol/layer/Tile';
 import OlTileGridTileGrid from 'ol/tilegrid/TileGrid';
+import XYZ from 'ol/source/XYZ';
 import OlStroke from 'ol/style/Stroke';
 import OlText from 'ol/style/Text';
 import OlFill from 'ol/style/Fill';
@@ -546,7 +548,84 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       date = util.dateAdd(date, 'day', day);
     }
     urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
+    if (def.id === '__all__') {
+      const resolutions = [
+        0.28125,
+        0.140625,
+        0.0703125,
+        0.03515625,
+        0.017578125,
+        0.0087890625,
+        0.00439453125,
+        0.002197265625,
+        0.0010986328125,
+        0.00054931640625,
+        0.00027465820313,
+      ];
+      const tileMatrices = [
+        { matrixWidth: 2, matrixHeight: 1 },
+        { matrixWidth: 3, matrixHeight: 2 },
+        { matrixWidth: 5, matrixHeight: 3 },
+        { matrixWidth: 10, matrixHeight: 5 },
+        { matrixWidth: 20, matrixHeight: 10 },
+        { matrixWidth: 40, matrixHeight: 20 },
+        { matrixWidth: 80, matrixHeight: 40 },
+        { matrixWidth: 160, matrixHeight: 80 },
+        { matrixWidth: 321, matrixHeight: 161 },
+        // { matrixWidth: 640, matrixHeight: 320 },
+      ];
+      const origins = [[-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-179.980606, 89.997803], [-180, 90]];// , [-180, 90]];
+      const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
+      // const origins = resolutions.map((res) => [-180 + res / 2, 90 - res / 2]);
+      // const defaultTileGrid = createXYZ({
+      //   extent: [-180, -90, 180, 90],
+      //   tileSize: [512, 512],
+      //   maxResolution: 0.5625,
+      // });
+      // origin: [-180, 90], // 89.997803],
+      const tileGrid = new OlTileGridTileGrid({
+        tileSize: [512, 512],
+        extent: [-180.0000000000000000, -89.9980130000000003, 179.9982229999999959, 90.0000000000000000],
+        origin: [-180.0000000000000000, -89.9980130000000003],
+        // origins,
+        sizes: sizesXYZ,
+        // minZoom: 1,
+        resolutions,
+      });
+      const zeroFilled = function(value) {
+        return `000${value}`.substr(-3);
+      };
+      const xyzsource = new XYZ({
+        projection: 'EPSG:4326',
+        // url: `http://localhost:8080/${proj.id}/{z}/{x}/{-y}.png`,
+        // url: `http://localhost:8080/${proj.id}/{z}/0/{x}/map.{z}.0.0_0{x}_050.png`,
+        tileSize: 512,
+        extent: [-180.000000, -90, 180, 90.000000],
+        // tileGrid: defaultTileGrid,
+        tileUrlFunction: (tileCoord, pixelRatio, projection) => {
+          const z = tileCoord[0];
+          const x = tileCoord[1] + 1;
+          console.log(pixelRatio);
+          // const y = -tileCoord[2];
+          // const y = (1 << z) - coordinate.y - 1;
+          const y = Math.pow(2, z) - tileCoord[2] - 1;
+          return `http://localhost:8080/${proj.id}/${z}/${y}/${x}.png`;
+          // console.log(`http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${zeroFilled(y)}_${zeroFilled(x)}.png`);
+          // return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${zeroFilled(y)}_${zeroFilled(x)}.tif`;
+        },
+        tileGrid,
+        transition: 0,
+        maxResolution: 0.5625,
+        minZoom: 1,
+      });
+      console.log(tileGrid.getTileCoordExtent([7, 0, 0]));
+      return new OlLayerTile({
+        preload: Infinity,
+        source: xyzsource,
+        extent: [-180.000000, -90, 180, 90.000000],
 
+      });
+    }
     const sourceOptions = {
       url: source.url + urlParameters,
       cacheSize: 4096,

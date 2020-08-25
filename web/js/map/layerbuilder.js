@@ -1,8 +1,10 @@
 /* eslint-disable import/no-duplicates */
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
 import { createXYZ } from 'ol/tilegrid';
-import XYZ from 'ol/source/XYZ';
+import OlTileImage from 'ol/source/TileImage';
 
+import XYZ from 'ol/source/XYZ';
+import TileDebug from 'ol/source/TileDebug';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlLayerGroup from 'ol/layer/Group';
@@ -549,7 +551,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         { matrixWidth: 40, matrixHeight: 20 },
         { matrixWidth: 80, matrixHeight: 40 },
         { matrixWidth: 160, matrixHeight: 80 },
-        { matrixWidth: 320, matrixHeight: 160 },
+        { matrixWidth: 321, matrixHeight: 161 },
         // { matrixWidth: 640, matrixHeight: 320 },
       ];
       const origins = [[-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-180, 90], [-179.980606, 89.997803], [-180, 90]];// , [-180, 90]];
@@ -564,33 +566,37 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       const tileGrid = new OlTileGridTileGrid({
         resolutions,
         tileSize: [512, 512],
-        extent: [-180.000000, -198.000000, 396.000000, 90.000000],
-
-        origins,
-        sizes: sizesXYZ,
-        minZoom: 1,
+        extent: [-180.0000000000000000, -89.9980130000000003, 179.9982229999999959, 90.0000000000000000],
+        origin: [-180.0000000000000000, -89.9980130000000003],
+        // origins,
+        // sizes: sizesXYZ,
+        // minZoom: 1,
       });
-      const xyzsource = new XYZ({
+      const zeroFilled = function(value) {
+        return `000${value}`.substr(-3);
+      };
+      const xyzsource = new TileDebug({
         projection: 'EPSG:4326',
-        url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
+        url: `http://localhost:8080/${proj.id}/{z}/{-y}/{x}.png`,
         // url: `http://localhost:8080/${proj.id}/{z}/0/{x}/map.{z}.0.0_0{x}_050.png`,
         tileSize: 512,
         extent: [-180.000000, -90, 180, 90.000000],
         // tileGrid: defaultTileGrid,
         // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
         //   const z = tileCoord[0];
-        //   const x = tileCoord[1];
-        //   const y = -tileCoord[2] - 1;
-        //   // const newY = Math.pow(2, z) - y - 1;
-        //   return `http://localhost:8080/${proj.id}/${z}/${y}/${x}.png`;
+        //   const x = tileCoord[1] + 1;
+        //   // const y = -tileCoord[2];
+        //   // const y = (1 << z) - coordinate.y - 1;
+        //   const y = Math.pow(2, z) - tileCoord[2] - 1;
+        //   console.log(`http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${zeroFilled(y)}_${zeroFilled(x)}.png`);
+        //   return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${zeroFilled(y)}_${zeroFilled(x)}.tif`;
         // },
         tileGrid,
         transition: 0,
         maxResolution: 0.5625,
-        tilePixelRatio: 2,
       });
       console.log(tileGrid.getTileCoordExtent([7, 0, 0]));
-      return new OlLayerTile({
+      return new OlTileImage({
         preload: Infinity,
         source: xyzsource,
         extent: [-180.000000, -90, 180, 90.000000],

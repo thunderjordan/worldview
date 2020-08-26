@@ -591,8 +591,11 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
           const x = tileCoord[1];
           let y = -tileCoord[2];
           y = Math.pow(2, z) - y - 1;
-          console.log(tileCoord, pixelRatio);
-          return `http://localhost:8080/${proj.id}/${z}/${y}/${x}.png`;
+          const floatNumber = function (num) {
+            return num.toString().padStart(3, '0');
+          };
+
+          return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${floatNumber(y)}_${floatNumber(x)}.png`;
         },
         tileGrid,
         transition: 0,

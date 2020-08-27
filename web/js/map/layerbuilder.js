@@ -586,17 +586,16 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
         tileSize: 512.002197265625,
         // tileGrid: defaultTileGrid,
-        tileUrlFunction: (tileCoord, pixelRatio, projection) => {
-          const z = tileCoord[0];
-          const x = tileCoord[1];
-          let y = -tileCoord[2];
-          y = Math.pow(2, z) - y - 1;
-          const floatNumber = function (num) {
-            return num.toString().padStart(3, '0');
-          };
+        // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
+        //   const z = tileCoord[0];
+        //   const x = tileCoord[1];
+        //   const y = tileCoord[2];
+        //   const floatNumber = function (num) {
+        //     return num.toString().padStart(3, '0');
+        //   };
 
-          return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${floatNumber(y)}_${floatNumber(x)}.png`;
-        },
+        //   return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${floatNumber(y)}_${floatNumber(x)}.png`;
+        // },
         tileGrid,
         transition: 0,
         // maxResolution: 360 / 512,

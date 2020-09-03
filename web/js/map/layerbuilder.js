@@ -550,7 +550,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       date = util.dateAdd(date, 'day', day);
     }
     urlParameters = `?TIME=${util.toISOStringSeconds(util.roundTimeOneMinute(date))}`;
-    const resolutions = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625];// 0.0010986328125];
+    const resolutions = [0.5625, 0.28125, 0.140625, 0.0703125, 0.03515625, 0.017578125, 0.0087890625, 0.00439453125, 0.002197265625, 0.0010986328125];
     if (def.id === '__all__') {
       const tileMatrices = [
         { matrixWidth: 2, matrixHeight: 1 },
@@ -562,7 +562,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
         { matrixWidth: 80, matrixHeight: 40 },
         { matrixWidth: 160, matrixHeight: 80 },
         { matrixWidth: 321, matrixHeight: 161 },
-        // { matrixWidth: 640, matrixHeight: 320 },
+        { matrixWidth: 640, matrixHeight: 320 },
       ];
       // [[-180, 90]],[-180, 90],[-180, 90],[-180, 90],[-180, 90],[-180, 90],[-180, 90]
       const sizesXYZ = tileMatrices.map(({ matrixWidth, matrixHeight }) => [matrixWidth, -matrixHeight]);
@@ -576,26 +576,35 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       const tileGrid = new OlTileGridTileGrid({
         resolutions,
         tileSize: [512, 512],
-        extent: [-180.000000, -198.000000, 396.000000, 90.000000],
+        extent: [-180.000000, -90, 180, 90.000000],
         origin: [-180, 90],
         // origins,
         sizes: sizesXYZ,
       });
       const sourceOptions = {
         projection: 'EPSG:4326',
-        url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
-        tileSize: 512.002197265625,
+        // url: `http://localhost:8080/${proj.id}/{z}/{y}/{x}.png`,
+        tileSize: 512,
         // tileGrid: defaultTileGrid,
-        // tileUrlFunction: (tileCoord, pixelRatio, projection) => {
-        //   const z = tileCoord[0];
-        //   const x = tileCoord[1];
-        //   const y = tileCoord[2];
-        //   const floatNumber = function (num) {
-        //     return num.toString().padStart(3, '0');
-        //   };
+        tileUrlFunction: (tileCoord, pixelRatio, projection) => {
+          const z = tileCoord[0];
+          const x = tileCoord[1] + 1;
+          const y = tileCoord[2] + 1;
+          const floatNumber = function (num, pad) {
+            return num.toString().padStart(pad, '0');
+          };
 
-        //   return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${floatNumber(y)}_${floatNumber(x)}.png`;
-        // },
+          let floatedX = floatNumber(x, 2);
+          let floatedY = floatNumber(y, 2);
+
+          if (z > 6) {
+            floatedX = floatNumber(x, 3);
+            floatedY = floatNumber(y, 3);
+          }
+
+
+          return `http://localhost:8080/${proj.id}/${z}/0/${y}/map.${z}.0.0_${floatedY}_${floatedX}.png`;
+        },
         tileGrid,
         transition: 0,
         // maxResolution: 360 / 512,

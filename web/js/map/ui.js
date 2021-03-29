@@ -477,7 +477,7 @@ export default function mapui(models, config, store, ui) {
       }
       if (extent) {
         map.getView().fit(extent, {
-          constrainResolution: false,
+          constrainResolution: true,
           callback,
         });
       } else if (rotationStart && projId !== 'geographic') {
@@ -949,6 +949,7 @@ export default function mapui(models, config, store, ui) {
         zoom: proj.startZoom,
         maxZoom: proj.numZoomLevels,
         enableRotation: true,
+        constrainResolution: true,
         extent: proj.id === 'geographic' ? [-250, -90, 250, 90] : proj.maxExtent,
         constrainOnlyCenter: true,
       }),
@@ -1032,6 +1033,8 @@ export default function mapui(models, config, store, ui) {
     });
     map.on('moveend', (e) => {
       events.trigger('map:moveend');
+      const view = map.getView();
+      console.log(`zoom: ${view.getZoom()} Resolution: ${view.getResolution()}`);
       setTimeout(() => {
         self.mapIsbeingDragged = false;
         self.mapIsbeingZoomed = false;

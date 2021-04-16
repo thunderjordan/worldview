@@ -343,7 +343,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       url: source.url + urlParameters,
       layer: def.layer || def.id,
       cacheSize: 4096,
-      crossOrigin: 'anonymous',
+      // crossOrigin: 'anonymous',
       format: def.format,
       transition: 0,
       matrixSet: matrixSet.id,
@@ -537,7 +537,7 @@ export default function mapLayerBuilder(models, config, cache, ui, store) {
       cacheSize: 4096,
       wrapX: true,
       style: 'default',
-      crossOrigin: 'anonymous',
+      // crossOrigin: 'anonymous',
       params: parameters,
       transition: 0,
       tileGrid: new OlTileGridTileGrid({

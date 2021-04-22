@@ -46,9 +46,11 @@ http = urllib3.PoolManager(
 )
 
 if not os.path.exists(output_dir):
+    print('Making directories ...')
     os.makedirs(output_dir)
 
 with open(config_file) as fp:
+    print('Opening config file ...')
     config = json.load(fp)
 
 def process_vector_data(layer):
@@ -179,6 +181,7 @@ if "wv-options-fetch" in config:
     for entry in config["wv-options-fetch"]:
         try:
             remote_count += 1
+            print('About to process GC request ...')
             process_remote(entry)
         except Exception as e:
             if tolerant:

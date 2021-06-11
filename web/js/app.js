@@ -41,7 +41,10 @@ import '../../node_modules/simplebar/dist/simplebar.min.css';
 import '../../node_modules/react-swipe-to-delete-component/dist/swipe-to-delete.css';
 import 'react-image-crop/dist/ReactCrop.css';
 import 'react-resizable/css/styles.css';
-// App CSS
+// App CSS/SCSS
+import '../css/variables.scss';
+import '../css/modal.css';
+import '../css/tour.scss';
 import '../css/fonts.css';
 import '../css/alert.css';
 import '../css/reset.css';
@@ -54,14 +57,12 @@ import '../css/toolbar.css';
 import '../css/notifications.css';
 import '../css/sidebar-panel.css';
 import '../css/button.css';
-import '../css/modal.css';
 import '../css/checkbox.css';
 import '../css/map.css';
 import '../css/link.css';
 import '../css/palettes.css';
 import '../css/image.css';
 import '../css/projection.css';
-import '../css/tour.css';
 import '../css/products.css';
 import '../css/events.css';
 import '../css/smart-handoff.css';

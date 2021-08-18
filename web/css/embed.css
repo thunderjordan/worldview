@@ -196,7 +196,14 @@
   }
   @media only screen and (max-width: 450px) {
     .wv-animation-widget-wrapper.minimized {
-      left: 93px;
+      left: 10px;
+      bottom: 92px;
     }
   }
+}
+
+/* MODAL (outside of main page #app ) */
+.modal-embed .modal-content {
+  transform: scale(0.85);
+  transform-origin: left;
 }

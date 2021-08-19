@@ -125,6 +125,7 @@
   .mobile-date-change-arrows-btn {
     left: 168px;
     transform: scale(0.75);
+    transform-origin: left;
   }
 
   /* COMPARE */

@@ -911,7 +911,7 @@ class Timeline extends React.Component {
     let mobileLeft = 190;
     let mobileBottom = 10;
     if (isEmbedModeActive) {
-      mobileLeft = 135;
+      mobileLeft = 143;
       mobileBottom = 4;
     }
     // positioning will change depending on a combination of:
@@ -927,8 +927,8 @@ class Timeline extends React.Component {
       mobileLeft = isCompareModeActive ? 112 : 10;
       mobileBottom = 65;
       if (isEmbedModeActive) {
-        mobileLeft = isCompareModeActive ? 80 : 0;
-        mobileBottom = 45;
+        mobileLeft = isCompareModeActive ? 85 : 10;
+        mobileBottom = 44;
       }
     }
 

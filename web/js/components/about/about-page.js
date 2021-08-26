@@ -4,23 +4,35 @@ import Scrollbar from '../util/scrollbar';
 export default function AboutPage() {
   return (
 
-    <Scrollbar style={{ height: 'calc(var(--vh, 1vh) * 100 - 200px)' }}>
+    <Scrollbar style={{ height: 'calc(var(--vh, 1vh) * 100 - 100px)' }}>
       <div className="about-page">
         <h1>
           Welcome to @NAME@
-        </h1>
-
-        <div className="right">
-          <div className="caption">
+          <span className="version">
+            {' '}
             Version @BUILD_VERSION@
             (
             <a href="https://github.com/nasa-gibs/worldview/releases" target="_blank" rel="noopener noreferrer">Release Notes</a>
             )
+          </span>
+        </h1>
+
+        <div className="right">
+          <div className="caption">
+            <a href="https://wiki.earthdata.nasa.gov/pages/viewrecentblogposts.action?key=GIBS" target="_blank" rel="noopener noreferrer">
+              {' '}
+              What&apos;s new in @NAME@!
+              {' '}
+            </a>
           </div>
         </div>
 
         <p>
-          This app from NASA&apos;s
+          This
+          {' '}
+          <a href="https://github.com/nasa-gibs/worldview" target="_blank" rel="noopener noreferrer">open source code</a>
+          {' '}
+          app from NASA&apos;s
           {' '}
           <a href="https://earthdata.nasa.gov/eosdis" target="_blank" rel="noopener noreferrer">EOSDIS</a>
           {' '}
@@ -29,7 +41,7 @@ export default function AboutPage() {
           of observation - essentially showing the entire Earth as it looks &quot;right now&quot;. This supports time-critical application
           areas such as wildfire management, air quality measurements, and flood monitoring. Arctic and Antarctic views
           of many products are also available for a &quot;full globe&quot; perspective. Geostationary imagery layers are also now available.
-          These are provided in ten minute increments for the last 30 days. These full disk hemispheric views allow for almost real-time viewing of
+          These are provided in ten minute increments for the last 90 days. These full disk hemispheric views allow for almost real-time viewing of
           changes occurring around most of the world. Browsing on tablet and smartphone devices is generally supported for mobile access to the imagery.
         </p>
 
